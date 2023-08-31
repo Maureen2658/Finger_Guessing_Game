@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        background-color: #ffec3d;
+    }
+    .title{
+        visibility: hidden;
+        text-align: center;
+        font-weight: normal;
+        overflow: hidden;
+        text-align: center;
+        margin-top: 80px;
+        margin-bottom: 80px;
+    }
+    .content{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .gesture{
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+    #tip{
+       width: 100%;
+       height: 40px;
+       line-height: 40px;
+       text-align: center;
+        font-weight: normal;
+        font-size: 16px;
+        margin-bottom: 50px;
+    }
+    .botton{
+        width: 100%;
+        margin-top: 20px;
+       
+        display: flex;
+        justify-content: center;
+    }
+    .btn{
+        display: block;
+        padding: 10px 20px;
+        color: #fff;
+        background-color: #000;
+        border-radius: 7px;
+        font-size: 12px;
+    }
+    .left,.right{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    #result{
+        display: none;
+    }
+    .pending{
+        display: block;
+    }
+    .imgbox{
+      display: none;
+      width: 100%;
+      height: 100px;
+    }
+    #favDialog{
+        width: 300px;
+        text-align: center;
+    }
+    #favSelect{
+        padding: 5px 15px;
+    }
+    #confirmBtn{
+        background-color: #1677ff;
+        color: #fff;
+        border: 1px solid #1677ff;
+        padding: 7px 18px;
+        border-radius: 7px;
+        text-align: center;
+    }
+</style>
+<body>
+    <div>
+        <h2 class="title">第回合（共三回合）</h2>
+        <div class="content">
+            <div class="left">
+                <div class="reGesture">
+                    <span class="pending">？</span>
+                    <img class='imgbox' src="./assets/scissor.png" alt="" />
+                </div>
+                <p>机器人</p>
+                <div class="report">胜：0 | 负：0</div>
+            </div>
+            <div class="right">
+                <div class="cgGesture">
+                    <span class="pending">？</span>
+                    <img class='imgbox'  src="./assets/scissor.png" alt="" />
+                </div>
+                <p>耳东</p>
+                <div class="my">胜：0 | 负：0</div>
+            </div>
+        </div>
+        <h3 id="tip"></h3>
+        <div class="botton">
+            <div class="btn" onclick="star()">开始下一回合</div>
+           <h2 id="result"> (≧v≦)o~~好棒，恭喜机器人获得胜利！</h2>
+        </div>
+        <dialog id="favDialog">
+            <form method="dialog">
+              <p>
+                <label>请选择要出的手势:
+                  <select id="favSelect">
+                    <option value='2'>石头</option>
+                    <option value='3'>剪刀</option>
+                    <option value='1'>布</option>
+                  </select>
+                </label>
+              </p>
+              <div>
+                <button id="confirmBtn" value="default">确定</button>
+              </div>
+            </form>
+          </dialog>
+          <output></output>
+       
+    </div>
+    <script>
+        const title = document.getElementsByClassName('title') // 第几回合
+        // 弹框内容
+        const favDialog = document.getElementById("favDialog");
+        const outputBox = document.querySelector("output");
+        const selectEl = favDialog.querySelector("select");
+        const confirmBtn = favDialog.querySelector("#confirmBtn");
+
+        // 石头剪刀布效果控制
+        let intervalTimer = null
+
+        // 回合次数
+        var num = 0
+
+        // 我的出拳顺序
+        let myNum = 4
+
+        // 机器人出拳顺序
+        let reprtNum = 4
+        // 点击开始下一回合显示标题
+        // 图片开始随机数的出来，进行对比判断，修改胜利
+        // 显示谁赢
+
+        // 猜拳图片和旋转控制
+
+        const imgList = {
+            1: {
+                icon: 'paper',
+                deg: 45
+            },
+            2:  {
+                icon: 'rock',
+                deg: 45
+            },
+            3: {
+                icon: 'scissor',
+                deg: 140
+            }
+        }
+
+
+        // 各自的胜负次数
+        const info= {
+            report:{
+                win:0,
+                fail: 0
+            },
+            my: {
+                win:0,
+                fail: 0
+            }
+        }
+
+        // 随机图片顺序
+        function randomImg(){
+            return Math.floor(Math.random() * (3 - 1 + 1)) + 1
+        }
+        // 图片属性替换
+        function srcReplace() {
+            intervalTimer = setInterval(() => {
+                myNum = randomImg()
+                reprtNum = randomImg()
+                document.getElementsByTagName('img')[0].src=`./assets/${imgList[reprtNum].icon}.png`
+                document.getElementsByTagName('img')[1].src=`./assets/${imgList[myNum].icon}.png`
+                
+              if(reprtNum === 3) {
+                document.getElementsByTagName('img')[1].style.transform='rotate(-140deg)'
+                document.getElementsByTagName('img')[0].style.transform='rotate(-45deg)'
+              } else {
+                document.getElementsByTagName('img')[0].style.transform=`rotate(${imgList[reprtNum].deg}deg)`
+                document.getElementsByTagName('img')[1].style.transform=`rotate(${-imgList[myNum].deg}deg)`
+              }
+            }, 50)
+        }
+        
+        // 猜拳结束
+        function end () {
+            let winner = false // 我方胜利为true
+
+            const reportIcon = imgList[reprtNum].icon
+                // 判断谁胜利
+                if(myNum===reprtNum) {
+                 
+                    document.getElementById('tip').innerText = '本回合平'
+                    successTip()
+                    return
+                } else if (myNum===1 && reportIcon === 'rock') {
+                   
+                    winner = true
+                } else if (myNum===2 && reportIcon === 'scissor') {
+                   
+                    winner = true
+                } else if(myNum===3 && reportIcon === 'paper') {
+                   
+                    winner = true
+                    
+                }
+                // 修改胜者数据
+                if(winner) {
+                    info.my.win++
+                    info.report.fail--
+                    document.getElementById('tip').innerText = '本回合你赢'
+                } else  {
+                    info.report.win++
+                    info.my.fail--
+                    document.getElementById('tip').innerText = '本回合机器人赢'
+                } 
+                document.getElementsByClassName('report')[0].innerText = `胜：${info.report.win} | 负：${Math.abs(info.report.fail)}`
+                document.getElementsByClassName('my')[0].innerText = `胜：${info.my.win} | 负：${Math.abs(info.my.fail)}`
+                successTip()
+        }
+        // 胜利者通告
+        function successTip(){
+            if(num === 3){
+                    console.log('jinlioa');
+                    document.getElementsByClassName('btn')[0].style.display = 'none'
+                    document.getElementById('result').style.display = 'block'
+                    if(info.my.win > info.report.win) {
+                        document.getElementById('result').innerText = '(≧v≦)o~~好棒，恭喜你获得胜利！'
+                    } else {
+                        document.getElementById('result').innerText = '(≧v≦)o~~好棒，恭喜机器人获得胜利！'
+                    }
+                }
+        }
+        
+         function replaceImg (){
+            console.log(document.getElementsByTagName('img'));
+            document.querySelectorAll('.pending')[0].style.display = `none`
+            document.querySelectorAll('.pending')[1].style.display = `none`
+            document.getElementsByTagName('img')[0].style.display = 'block'
+            document.getElementsByTagName('img')[1].style.display = 'block'
+             srcReplace()
+        }
+
+        // 开始猜拳，打开选择弹框
+       function star() {
+        if (typeof favDialog.showModal === "function") {
+            favDialog.showModal();
+            num++
+            document.getElementsByClassName('title')[0].style.visibility = 'visible' 
+            document.getElementsByClassName('title')[0].innerText = `第${num}回合（共三回合）`
+            replaceImg()
+           } else {
+             outputBox.value =
+            "Sorry, the <dialog> API is not supported by this browser.";
+            }
+        }
+
+        selectEl.addEventListener("change", (e) => {
+            confirmBtn.value = selectEl.value;
+        });
+        
+        // 弹框关闭事件
+        favDialog.addEventListener("close", () => {
+        clearInterval(intervalTimer)
+        myNum = Number(selectEl.value)
+        document.getElementsByTagName('img')[1].src=`./assets/${imgList[Number(myNum)].icon}.png`
+        if(myNum < 3) {
+            document.getElementsByTagName('img')[1].style.transform=`rotate(${-imgList[myNum].deg}deg)`
+        } else {
+            document.getElementsByTagName('img')[1].style.transform='rotate(-140deg)'
+        }
+        end()
+});
+    </script>
+</body>
+</html>
