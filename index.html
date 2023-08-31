@@ -106,7 +106,7 @@
                     <span class="pending">？</span>
                     <img class='imgbox'  src="./assets/scissor.png" alt="" />
                 </div>
-                <p>耳东</p>
+                <p>玩家</p>
                 <div class="my">胜：0 | 负：0</div>
             </div>
         </div>
@@ -235,7 +235,7 @@
                 if(winner) {
                     info.my.win++
                     info.report.fail--
-                    document.getElementById('tip').innerText = '本回合你赢'
+                    document.getElementById('tip').innerText = '本回合玩家赢'
                 } else  {
                     info.report.win++
                     info.my.fail--
@@ -252,7 +252,7 @@
                     document.getElementsByClassName('btn')[0].style.display = 'none'
                     document.getElementById('result').style.display = 'block'
                     if(info.my.win > info.report.win) {
-                        document.getElementById('result').innerText = '(≧v≦)o~~好棒，恭喜你获得胜利！'
+                        document.getElementById('result').innerText = '(≧v≦)o~~好棒，恭喜玩家获得胜利！'
                     } else {
                         document.getElementById('result').innerText = '(≧v≦)o~~好棒，恭喜机器人获得胜利！'
                     }
